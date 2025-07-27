@@ -146,7 +146,7 @@ class DatabaseService:
         return {setting["key"]: setting["value"] for setting in settings}
 
     async def get_setting(self, key: str):
-        setting = await self.db.settings.find_one({"key": key})
+        setting = await self.db.settings.find_one({"key": key}, {"_id": 0})
         return setting["value"] if setting else None
 
     async def update_setting(self, key: str, value: dict):
