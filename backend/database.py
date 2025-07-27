@@ -42,7 +42,7 @@ class DatabaseService:
     # Services operations
     async def get_services(self, active_only: bool = True):
         query = {"active": True} if active_only else {}
-        cursor = self.db.services.find(query).sort("order", 1)
+        cursor = self.db.services.find(query, {"_id": 0}).sort("order", 1)
         services = await cursor.to_list(length=None)
         return services
 
