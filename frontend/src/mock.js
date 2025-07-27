@@ -134,12 +134,12 @@ export const mockTestimonials = [
 
 export const mockContact = {
   phone: "050-123-4567",
-  email: "yonatan@jewishevents.co.il",
+  email: "yedidya@jewishevents.co.il",
   address: "ירושלים, ישראל",
   addressEn: "Jerusalem, Israel",
   socialMedia: {
-    instagram: "@yonatan_photography",
-    facebook: "YonatanLevyPhotography"
+    instagram: "@yedidya_photography",
+    facebook: "YedidyaMalkaPhotography"
   }
 };
 
