@@ -17,7 +17,7 @@ class DatabaseService:
         if featured is not None:
             query["featured"] = featured
         
-        cursor = self.db.portfolio.find(query).sort("order", 1)
+        cursor = self.db.portfolio.find(query, {"_id": 0}).sort("order", 1)
         items = await cursor.to_list(length=None)
         return items
 
