@@ -106,7 +106,7 @@ class DatabaseService:
         if status:
             query["status"] = status
         
-        cursor = self.db.contact_messages.find(query).sort("created_at", -1)
+        cursor = self.db.contact_messages.find(query, {"_id": 0}).sort("created_at", -1)
         messages = await cursor.to_list(length=None)
         return messages
 
