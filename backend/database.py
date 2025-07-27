@@ -141,7 +141,7 @@ class DatabaseService:
 
     # Settings operations
     async def get_all_settings(self):
-        cursor = self.db.settings.find({})
+        cursor = self.db.settings.find({}, {"_id": 0})
         settings = await cursor.to_list(length=None)
         return {setting["key"]: setting["value"] for setting in settings}
 
