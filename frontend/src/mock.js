@@ -1,7 +1,7 @@
 // Mock data for Jewish Event Photographer website
 export const mockPhotographer = {
-  name: "יונתן לוי",
-  nameEn: "Yonatan Levy",
+  name: "ידידיה מלכא",
+  nameEn: "Yedidya Malka",
   tagline: "צלם אירועים יהודיים מקצועי",
   taglineEn: "Professional Jewish Event Photographer",
   description: "מתמחה בצילום אירועי מחזור החיים היהודיים - בר/בת מצווה, בריתות, עליות לתורה ואירועים משפחתיים מיוחדים",
