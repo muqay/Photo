@@ -72,7 +72,7 @@ class DatabaseService:
         if featured is not None:
             query["featured"] = featured
         
-        cursor = self.db.testimonials.find(query).sort("created_at", -1)
+        cursor = self.db.testimonials.find(query, {"_id": 0}).sort("created_at", -1)
         testimonials = await cursor.to_list(length=None)
         return testimonials
 
