@@ -128,7 +128,7 @@ class DatabaseService:
         if status:
             query["status"] = status
         
-        cursor = self.db.booking_requests.find(query).sort("created_at", -1)
+        cursor = self.db.booking_requests.find(query, {"_id": 0}).sort("created_at", -1)
         bookings = await cursor.to_list(length=None)
         return bookings
 
