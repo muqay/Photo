@@ -1,19 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Phone, Mail, MapPin, Instagram, Facebook, Send, Calendar } from 'lucide-react';
-import { mockContact, submitContactForm, submitBookingForm } from '../mock';
+import { contactAPI, settingsAPI, handleAPIError } from '../services/api';
 import { useToast } from '../hooks/use-toast';
 
 const Contact = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeForm, setActiveForm] = useState('contact'); // 'contact' or 'booking'
+  const [contactInfo, setContactInfo] = useState(null);
+  const [socialMedia, setSocialMedia] = useState(null);
   
   const [contactForm, setContactForm] = useState({
     name: '',
     phone: '',
     email: '',
-    eventType: '',
-    eventDate: '',
+    event_type: '',
+    event_date: '',
     message: ''
   });
 
@@ -21,13 +23,47 @@ const Contact = () => {
     name: '',
     phone: '',
     email: '',
-    eventType: '',
-    eventDate: '',
-    guestCount: '',
+    event_type: '',
+    event_date: '',
+    guest_count: '',
     budget: '',
     venue: '',
-    additionalInfo: ''
+    additional_info: ''
   });
+
+  useEffect(() => {
+    fetchContactSettings();
+  }, []);
+
+  const fetchContactSettings = async () => {
+    try {
+      const settingsResponse = await settingsAPI.getAll();
+      const settings = settingsResponse.data || {};
+      
+      setContactInfo(settings.contact_info || {
+        phone: "050-123-4567",
+        email: "yedidya@jewishevents.co.il",
+        address: "ירושלים, ישראל"
+      });
+      
+      setSocialMedia(settings.social_media || {
+        instagram: "@yedidya_photography",
+        facebook: "YedidyaMalkaPhotography"
+      });
+    } catch (error) {
+      console.error('Error fetching contact settings:', error);
+      // Use fallback values
+      setContactInfo({
+        phone: "050-123-4567",
+        email: "yedidya@jewishevents.co.il",
+        address: "ירושלים, ישראל"
+      });
+      setSocialMedia({
+        instagram: "@yedidya_photography",
+        facebook: "YedidyaMalkaPhotography"
+      });
+    }
+  };
 
   const eventTypes = [
     { value: 'bar-mitzvah', label: 'בר מצוה' },
@@ -51,7 +87,7 @@ const Contact = () => {
     setIsSubmitting(true);
     
     try {
-      const result = await submitContactForm(contactForm);
+      const result = await contactAPI.submitMessage(contactForm);
       toast({
         title: "הודעה נשלחה בהצלחה!",
         description: "אצור איתך קשר בהקדם האפשרי",
@@ -61,14 +97,15 @@ const Contact = () => {
         name: '',
         phone: '',
         email: '',
-        eventType: '',
-        eventDate: '',
+        event_type: '',
+        event_date: '',
         message: ''
       });
     } catch (error) {
+      const errorMessage = handleAPIError(error, 'שגיאה בשליחת ההודעה');
       toast({
         title: "שגיאה בשליחת ההודעה",
-        description: "אנא נסה שוב או צור קשר טלפונית",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -81,7 +118,7 @@ const Contact = () => {
     setIsSubmitting(true);
     
     try {
-      const result = await submitBookingForm(bookingForm);
+      const result = await contactAPI.submitBooking(bookingForm);
       toast({
         title: "בקשת הזמנה נשלחה!",
         description: "אחזור אליך תוך 24 שעות עם הצעת מחיר מפורטת",
@@ -91,23 +128,39 @@ const Contact = () => {
         name: '',
         phone: '',
         email: '',
-        eventType: '',
-        eventDate: '',
-        guestCount: '',
+        event_type: '',
+        event_date: '',
+        guest_count: '',
         budget: '',
         venue: '',
-        additionalInfo: ''
+        additional_info: ''
       });
     } catch (error) {
+      const errorMessage = handleAPIError(error, 'שגיאה בשליחת הבקשה');
       toast({
         title: "שגיאה בשליחת הבקשה",
-        description: "אנא נסה שוב או צור קשר טלפונית",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (!contactInfo || !socialMedia) {
+    return (
+      <section id="contact" className="section-spacing">
+        <div className="container-jewish">
+          <div className="text-center">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-300 rounded w-64 mx-auto mb-4"></div>
+              <div className="h-4 bg-gray-300 rounded w-96 mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="contact" className="section-spacing">
@@ -127,7 +180,7 @@ const Contact = () => {
             <div className="space-y-6">
               <div className="flex items-center gap-4 justify-end">
                 <div>
-                  <p className="font-semibold text-gray-800">{mockContact.phone}</p>
+                  <p className="font-semibold text-gray-800">{contactInfo.phone}</p>
                   <p className="caption-text text-gray-600">זמין 24/7 לשיחות דחופות</p>
                 </div>
                 <Phone className="w-6 h-6 text-gray-500" />
@@ -135,7 +188,7 @@ const Contact = () => {
 
               <div className="flex items-center gap-4 justify-end">
                 <div>
-                  <p className="font-semibold text-gray-800">{mockContact.email}</p>
+                  <p className="font-semibold text-gray-800">{contactInfo.email}</p>
                   <p className="caption-text text-gray-600">מענה תוך 2-4 שעות</p>
                 </div>
                 <Mail className="w-6 h-6 text-gray-500" />
@@ -143,7 +196,7 @@ const Contact = () => {
 
               <div className="flex items-center gap-4 justify-end">
                 <div>
-                  <p className="font-semibold text-gray-800">{mockContact.address}</p>
+                  <p className="font-semibold text-gray-800">{contactInfo.address}</p>
                   <p className="caption-text text-gray-600">משרת את כל אזור המרכז</p>
                 </div>
                 <MapPin className="w-6 h-6 text-gray-500" />
@@ -155,7 +208,7 @@ const Contact = () => {
               <h4 className="font-semibold text-gray-800 mb-4">עקבו אחרי ברשתות החברתיות</h4>
               <div className="flex gap-4 justify-end">
                 <a
-                  href={`https://instagram.com/${mockContact.socialMedia.instagram.replace('@', '')}`}
+                  href={`https://instagram.com/${socialMedia.instagram.replace('@', '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-3 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
@@ -163,7 +216,7 @@ const Contact = () => {
                   <Instagram className="w-6 h-6 text-gray-600" />
                 </a>
                 <a
-                  href={`https://facebook.com/${mockContact.socialMedia.facebook}`}
+                  href={`https://facebook.com/${socialMedia.facebook}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-3 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"
@@ -268,8 +321,8 @@ const Contact = () => {
                     <div className="form-group">
                       <label className="form-label">סוג האירוע</label>
                       <select
-                        name="eventType"
-                        value={contactForm.eventType}
+                        name="event_type"
+                        value={contactForm.event_type}
                         onChange={handleContactChange}
                         className="form-input"
                         dir="rtl"
@@ -284,8 +337,8 @@ const Contact = () => {
                       <label className="form-label">תאריך האירוע</label>
                       <input
                         type="date"
-                        name="eventDate"
-                        value={contactForm.eventDate}
+                        name="event_date"
+                        value={contactForm.event_date}
                         onChange={handleContactChange}
                         className="form-input"
                       />
@@ -365,8 +418,8 @@ const Contact = () => {
                     <div className="form-group">
                       <label className="form-label">סוג האירוע *</label>
                       <select
-                        name="eventType"
-                        value={bookingForm.eventType}
+                        name="event_type"
+                        value={bookingForm.event_type}
                         onChange={handleBookingChange}
                         className="form-input"
                         required
@@ -382,8 +435,8 @@ const Contact = () => {
                       <label className="form-label">תאריך האירוע *</label>
                       <input
                         type="date"
-                        name="eventDate"
-                        value={bookingForm.eventDate}
+                        name="event_date"
+                        value={bookingForm.event_date}
                         onChange={handleBookingChange}
                         className="form-input"
                         required
@@ -396,8 +449,8 @@ const Contact = () => {
                       <label className="form-label">מספר אורחים משוער</label>
                       <input
                         type="number"
-                        name="guestCount"
-                        value={bookingForm.guestCount}
+                        name="guest_count"
+                        value={bookingForm.guest_count}
                         onChange={handleBookingChange}
                         className="form-input"
                         placeholder="כמה אורחים?"
@@ -437,8 +490,8 @@ const Contact = () => {
                   <div className="form-group">
                     <label className="form-label">פרטים נוספים</label>
                     <textarea
-                      name="additionalInfo"
-                      value={bookingForm.additionalInfo}
+                      name="additional_info"
+                      value={bookingForm.additional_info}
                       onChange={handleBookingChange}
                       rows={4}
                       className="form-input form-textarea"
