@@ -101,3 +101,164 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Test the Jewish event photography website backend API to ensure all endpoints are working correctly"
+
+backend:
+  - task: "Portfolio Endpoints - GET /api/portfolio"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Initial test failed with 500 error due to MongoDB ObjectId serialization issue"
+      - working: true
+        agent: "testing"
+        comment: "Fixed ObjectId serialization by excluding _id field in database queries. Successfully retrieves 6 portfolio items with Hebrew titles and descriptions. Category filtering works for all event types (Bar Mitzvah, Bat Mitzvah, Brit Milah, Torah Reading, Family Event)"
+
+  - task: "Portfolio Endpoints - GET /api/portfolio/featured"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Initial test failed with 500 error due to MongoDB ObjectId serialization issue"
+      - working: true
+        agent: "testing"
+        comment: "Fixed ObjectId serialization. Successfully retrieves 4 featured portfolio items, all properly marked as featured=true"
+
+  - task: "Services Endpoints - GET /api/services"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Initial test failed with 500 error due to MongoDB ObjectId serialization issue"
+      - working: true
+        agent: "testing"
+        comment: "Fixed ObjectId serialization. Successfully retrieves 3 active services with Hebrew names, descriptions, and pricing information. All services properly marked as active=true"
+
+  - task: "Testimonials Endpoints - GET /api/testimonials"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Initial test failed with 500 error due to MongoDB ObjectId serialization issue"
+      - working: true
+        agent: "testing"
+        comment: "Fixed ObjectId serialization. Successfully retrieves 3 approved testimonials with Hebrew text, all properly marked as approved=true"
+
+  - task: "Testimonials Endpoints - GET /api/testimonials/featured"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Initial test failed with 500 error due to MongoDB ObjectId serialization issue"
+      - working: true
+        agent: "testing"
+        comment: "Fixed ObjectId serialization. Successfully retrieves 3 featured testimonials, all properly marked as featured=true and approved=true"
+
+  - task: "Contact Endpoints - POST /api/contact"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Successfully submits contact messages with Hebrew text. Returns Hebrew response message 'הודעתך נשלחה בהצלחה!' confirming proper Hebrew text handling"
+
+  - task: "Booking Endpoints - POST /api/booking"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Successfully submits booking requests with Hebrew text and event details. Returns Hebrew response message 'בקשת ההזמנה נשלחה בהצלחה!' confirming proper Hebrew text handling and date parsing"
+
+  - task: "Settings Endpoints - GET /api/settings"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Successfully retrieves all settings including photographer_info, contact_info, and social_media. Photographer name 'ידידיה מלכא' correctly stored and retrieved with Hebrew encoding"
+
+  - task: "Settings Endpoints - Individual setting retrieval"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Successfully retrieves individual settings by key (photographer_info, contact_info, social_media) via GET /api/settings/{key} endpoints"
+
+  - task: "Database Integration and Hebrew Text Encoding"
+    implemented: true
+    working: true
+    file: "/app/backend/database.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Initial MongoDB ObjectId serialization issue preventing data retrieval"
+      - working: true
+        agent: "testing"
+        comment: "Fixed ObjectId serialization by excluding _id field in all database queries. Hebrew text properly encoded and retrieved from MongoDB. Document structure verified with correct fields (id, title, category, image, description, featured). Photographer name 'ידידיה מלכא' correctly stored and retrieved"
+
+frontend:
+  # Frontend testing not performed by testing agent
+
+metadata:
+  created_by: "testing_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "All backend API endpoints tested and working"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "testing"
+    message: "Completed comprehensive backend API testing for Jewish event photography website. Fixed critical MongoDB ObjectId serialization issue that was causing 500 errors on all GET endpoints. All 10 backend tasks now working correctly with 100% success rate. Hebrew text encoding and retrieval working properly. Database integration verified with correct photographer name 'ידידיה מלכא'. All endpoints tested: Portfolio (GET, featured, category filtering), Services (GET active), Testimonials (GET approved, featured), Contact/Booking (POST with Hebrew responses), Settings (GET all, individual). Ready for production use."
